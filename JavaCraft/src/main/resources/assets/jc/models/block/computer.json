@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+      	"north": "jc:blocks/computerfront",
+    	"south": "jc:blocks/computerback",
+    	"east": "jc:blocks/computerback",
+    	"west": "jc:blocks/computerback",
+    	"up": "jc:blocks/computerback",
+    	"down": "jc:blocks/computerback",
+	"particle": "jc:blocks/computerback"
+    }
+}
