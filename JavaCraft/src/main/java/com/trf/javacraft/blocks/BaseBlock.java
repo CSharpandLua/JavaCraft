@@ -1,12 +1,14 @@
 package com.trf.javacraft.blocks;
 
 import com.trf.javacraft.Main;
+import com.trf.javacraft.gui.ComGui;
 import com.trf.javacraft.items.HasModel;
 import com.trf.javacraft.items.ModItems;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -34,10 +36,16 @@ public class BaseBlock extends Block implements HasModel {
 		ModItems.ITEMS.add(new ItemBlock(this).setRegistryName(this.getRegistryName()));
 	}
 
+	static boolean act = false;
+	
 	@Override
 	public boolean onBlockActivated(World w, BlockPos p, IBlockState st, EntityPlayer plr, EnumHand e, EnumFacing ef, float f, float f2, float f3)
 	{
-		plr.sendMessage(new TextComponentString("Yay!"));
+		if (! act)
+		{
+			Minecraft.getMinecraft().displayGuiScreen(new ComGui());
+			act = true;
+		}
 		return true;
 	}
 	
