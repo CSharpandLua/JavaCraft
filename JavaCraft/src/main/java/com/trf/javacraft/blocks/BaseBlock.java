@@ -1,7 +1,6 @@
 package com.trf.javacraft.blocks;
 
 import com.trf.javacraft.Main;
-import com.trf.javacraft.gui.ComGui;
 import com.trf.javacraft.items.HasModel;
 import com.trf.javacraft.items.ModItems;
 
@@ -34,19 +33,6 @@ public class BaseBlock extends Block implements HasModel {
 		setCreativeTab(CreativeTabs.REDSTONE);
 		ModBlocks.BLOCKS.add(this);
 		ModItems.ITEMS.add(new ItemBlock(this).setRegistryName(this.getRegistryName()));
-	}
-
-	static boolean act = false;
-	
-	@Override
-	public boolean onBlockActivated(World w, BlockPos p, IBlockState st, EntityPlayer plr, EnumHand e, EnumFacing ef, float f, float f2, float f3)
-	{
-		if (! act)
-		{
-			Minecraft.getMinecraft().displayGuiScreen(new ComGui());
-			act = true;
-		}
-		return true;
 	}
 	
 	@Override

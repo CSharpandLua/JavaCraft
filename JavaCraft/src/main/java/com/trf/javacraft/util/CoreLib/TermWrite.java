@@ -1,19 +1,37 @@
 package com.trf.javacraft.util.CoreLib;
 
-import java.util.function.Consumer;
+import com.trf.javacraft.computers.*;
+import com.trf.javacraft.gui.Str;
+import bsh.*;
 
-import com.trf.javacraft.util.ScriptFunc;
-
-public class TermWrite extends ScriptFunc {
-
-	public String name = "TermWrite";
+public class TermWrite {
 	
-	public static void call(String str) {
+	public static String name = "TermWrite";
+	
+	/**
+	 * Writes a string to the connected computers framebuffer
+	 * 
+	 * if no computer is present, does nothing
+	 * @param str String to write
+	 * @throws EvalError 
+	 */
+	public static void invoke(Interpreter env, CallStack stk, String str) throws EvalError {
 		
-	}
-			
-	public Object GetFunc() {
-		return (Consumer<String>) TermWrite::call;
+		Computer c = Registry.GetComputer((int) env.get("_ID"));
+		
+		System.out.println("NULL: " + Boolean.toString(c == null));
+		
+		    
+		if (c == null)
+		{
+			return;
+		}
+		
+		System.out.println("STR: " + str);
+		
+		Registry.$Out = str;
+		c.Write("T: " + str);
 	}
 	
+	public TermWrite() {}
 }
