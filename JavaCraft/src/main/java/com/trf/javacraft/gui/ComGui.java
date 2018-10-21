@@ -10,6 +10,8 @@ import org.lwjgl.input.Keyboard;
 
 import com.trf.javacraft.Main;
 import com.trf.javacraft.computers.Computer;
+import com.trf.javacraft.computers.File;
+import com.trf.javacraft.computers.FrameBuffer;
 import com.trf.javacraft.computers.Registry;
 
 import bsh.EvalError;
@@ -49,7 +51,7 @@ class TextBox extends GuiTextField {
 public class ComGui extends GuiScreen {
 	
 	int topx = height / 2 - 260 / 2 + 215;
-	int topy = ((width / 2 - 260 / 2) + 140);
+	public int topy = ((width / 2 - 260 / 2) + 140);
 	public final int LINE = 19;
 	public int Line = topy; 
 	String CurLine = "";
@@ -57,7 +59,8 @@ public class ComGui extends GuiScreen {
 	public boolean infile = false;
 	public int fline = 0;
 	public final Computer c; // The computer instance associated with this GUI
-	
+	public String CurFileName;
+	public boolean Reading = false;
 	/**
 	 * Ran when a key is typed
 	 */
@@ -77,7 +80,37 @@ public class ComGui extends GuiScreen {
 		if (par2 == Keyboard.KEY_RETURN)
 		{
 			end = true;
+			
+			if (infile)
+			{
+				infile = false;
+				Line = topy;
+				Buffer.StrList.clear();
+				c.root.AddFile(new File(CurFileName, CurFile));
+			}
+			
 			return;
+		}
+		
+		if (infile)
+		{
+			if (par2 == Keyboard.KEY_UP)
+			{
+				if (fline > 0)
+				{
+					fline--;
+					in.setText(Buffer.Get(fline).data);
+				}
+			}
+			
+			if (par2 == Keyboard.KEY_DOWN)
+			{
+				if (fline < Buffer.StrList.size())
+				{
+					fline++;
+					in.setText(Buffer.Get(fline).data);
+				}
+			}
 		}
 		
 		in.textboxKeyTyped(par1, par2);
@@ -86,9 +119,17 @@ public class ComGui extends GuiScreen {
 	/**
 	 * A List of Objects that define content/line values to draw on screen
 	 */
-	public List<Str> FrameBuffer = new ArrayList<Str>();
+	@Deprecated
+	public List<Str> framebuffer = new ArrayList<Str>();
+	public FrameBuffer Buffer;
+	
 	private List<Str> CurFile = new ArrayList<Str>();
 	private GuiTextField in;
+	
+	public void Write(String str)
+	{
+		Buffer.Write(new Str(str, Line));
+	}
 	
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTime) {
@@ -97,21 +138,33 @@ public class ComGui extends GuiScreen {
 		drawTexturedModalRect(width / 2 - 260 / 2, height / 2 - 260 / 2, 0, 0, 260, 260);
 		
 		// Draw FrameBuffer
-		for (Str s : FrameBuffer) {
-			this.fontRenderer.drawString(s.data, topx, s.line, 0xffFFFFFF);
+		for (Str s : Buffer.StrList) {
+			this.fontRenderer.drawString(s.data, topx + 10, s.line, 0xffFFFFFF);
 		}
 			
 		if (end)
 		{
+			
+			if (infile)
+			{
+				CurFile.add(new Str(in.getText(), Line));
+				Line += Line;
+				super.drawScreen(mouseX, mouseY, partialTime);
+				return;
+			}
+			
 			end = false;
 			
-			c.Exec(in.getText());
-			
-			FrameBuffer.add(new Str(Registry.$Out, Line));
+			Buffer.Write(new Str(">" + in.getText(), Line));
 			
 			Line += LINE;
 			
-			FrameBuffer.add(new Str(">" + in.getText(), Line));
+			try {
+				c.core.Exec("LineEntered(\"" + in.getText() +"\")");
+			}
+			catch (EvalError e) {
+				Buffer.Write(new Str("OS-Error: " + e.getMessage(), Line));
+			}
 			
 			Line += LINE;
 			
@@ -137,6 +190,16 @@ public class ComGui extends GuiScreen {
 	public ComGui(Computer com)
 	{
 		c = com;
+		
+		if (Registry.GetBuf(c.Id) == null)
+		{
+			Buffer = new FrameBuffer(c.Id);
+			Registry.AddBuf(Buffer);
+		}
+		else
+		{
+			Buffer = Registry.GetBuf(c.Id);
+		}
 	}
 	
 }

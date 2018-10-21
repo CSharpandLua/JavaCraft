@@ -1,5 +1,8 @@
 package com.trf.javacraft.blocks;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import com.trf.javacraft.computers.Computer;
 import com.trf.javacraft.computers.Registry;
 import com.trf.javacraft.gui.ComGui;
@@ -25,13 +28,20 @@ public class ComBlock extends BaseBlock {
 	{
 		Computer c;
 		
-		c = new Computer();
-		c.ThisGui = new ComGui(c);	
+		try {
+			c = new Computer();
+			c.ThisGui = new ComGui(c);	
 		
-		Registry.AddComputer(c);
+			Registry.AddComputer(c);
+			Registry.AddGui(c.ThisGui);
 		
-		Minecraft.getMinecraft().displayGuiScreen(c.ThisGui);
-		ThisCom = c;
+			Minecraft.getMinecraft().displayGuiScreen(c.ThisGui);
+			c.LoadMain();
+			ThisCom = c;
+		}
+		catch (EvalError | IOException err) {
+			System.out.println("ERROR: " + err.getMessage());
+		}
 		
 		return true;
 	}

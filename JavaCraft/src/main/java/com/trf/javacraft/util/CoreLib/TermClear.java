@@ -5,7 +5,7 @@ import com.trf.javacraft.gui.ComGui;
 import com.trf.javacraft.gui.Str;
 import bsh.*;
 
-public class TermWrite {
+public class TermClear {
 	
 	/**
 	 * Writes a string to the connected computers framebuffer
@@ -14,24 +14,18 @@ public class TermWrite {
 	 * @param str String to write
 	 * @throws EvalError 
 	 */
-	public static void invoke(Interpreter env, CallStack stk, String str) throws EvalError {
+	public static void invoke(Interpreter env, CallStack stk) throws EvalError {
 		
 		ComGui c = Registry.GetComputer((int) env.get("_ID")).ThisGui;
-		
-		System.out.println("NULL: " + Boolean.toString(c == null));
-		
 		    
 		if (c == null)
 		{
 			return;
 		}
 		
-		System.out.println("STR: " + str);
-		
-		c.Buffer.Write(new Str(str, (int) env.get("_RENDERLINE")));
-		
-		System.out.println("Done.");
+		c.Line = c.topy;
+		c.Buffer.StrList.clear();
 	}
 	
-	public TermWrite() {}
+	public TermClear() {}
 }

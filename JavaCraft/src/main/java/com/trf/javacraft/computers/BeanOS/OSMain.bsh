@@ -1,0 +1,19 @@
+void Main() {
+    TermWrite("Welcome to BeanOS :D");
+}
+
+void LineEntered(String line) {
+
+    String[] spl = line.split(" ")
+    
+    if (spl[0] == "echo") {
+        TermWrite(spl[1]);
+    }
+    
+    if (spl[0] == "bean") {
+        eval(spl[1]);
+    }
+    
+    TermWrite("Unknown Command!");
+
+}
